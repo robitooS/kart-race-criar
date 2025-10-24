@@ -6,7 +6,7 @@ O desafio consiste em processar um arquivo de log de uma corrida de kart e gerar
 
 ## REGISTRO DOS DADOS
 
-![1761309996816](image/README/1761309996816.png)
+![Registro de Log da Corrida](image/1761309996816.png)
 
 O arquivo `data/log_kart.csv` contém os registros da corrida , utilizando `;` como delimitador.
 
