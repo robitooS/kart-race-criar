@@ -5,8 +5,7 @@
 O desafio consiste em processar um arquivo de log de uma corrida de kart e gerar informações estatísticas sobre o desempenho dos pilotos.
 
 ## REGISTRO DOS DADOS
-
-![Registro de Log da Corrida](image/1761309996816.png)
+![](image/README/1761309996816.png)
 
 O arquivo `data/log_kart.csv` contém os registros da corrida , utilizando `;` como delimitador.
 
