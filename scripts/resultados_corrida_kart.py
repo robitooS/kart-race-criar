@@ -36,9 +36,38 @@ print(f"\n************** DF INICIAL **************\n{df_race_kart_logs}\n")
 
 # === 2. Contar voltas por piloto ===
 qtd_voltas_series = df_race_kart_logs["Piloto"].value_counts()
-qtd_voltas_dict = {indice.split("-")[0].strip() : valor for indice, valor in qtd_voltas_series.items()}
-print(qtd_voltas_dict)
+qtd_voltas_dict = {
+    piloto_str.split("-")[0].strip(): qtd
+    for piloto_str, qtd in qtd_voltas_series.items()
+}
 
-# Inserir no df resultante
-df_results_race_kart["Quantidade de voltas completadas"] = df_results_race_kart["Código do piloto"].map(qtd_voltas_dict) # O map aplica sozinho p cada linha
-print(df_results_race_kart)
+# Inserir quantidade de voltas no DF de resultados
+df_results_race_kart["Quantidade de voltas completadas"] = (
+    df_results_race_kart["Código do piloto"].map(qtd_voltas_dict)
+)
+
+print(f"\n************** DF RESULTANTE APÓS QTD DE VOLTAS **************\n{df_results_race_kart}\n")
+
+# === 3. Tempo total de prova ===
+df_race_kart_logs['Tempo_Volta_td'] = pd.to_timedelta(
+    '00:' + df_race_kart_logs['Tempo_Volta']
+) # Transformar em timedelta p calcular as durações, vem como object no df
+
+# Retorna uma serie com o valor somado por cada cod. de piloto
+tempo_por_piloto_series = df_race_kart_logs.groupby("Cod_Piloto")["Tempo_Volta_td"].sum()
+df_results_race_kart["Tempo total de prova"] = df_results_race_kart["Código do piloto"].map(tempo_por_piloto_series)
+
+print(f"\n************** DF RESULTANTE APÓS TEMPO TOTAL DE PROVA **************\n{df_results_race_kart}\n")
+
+# Formatar a coluna para tornar mais legível
+df_results_race_kart["Tempo total de prova"] = df_results_race_kart["Tempo total de prova"].astype(str).apply(lambda x: x.split(" ")[2])
+
+print(f"\n************** DF RESULTANTE APÓS FORMATAÇÃO DA DURAÇÃO **************\n{df_results_race_kart}\n")
+
+# === 3. Posição de chegada dos pilotos ===
+df_results_race_kart = df_results_race_kart.sort_values(by=["Quantidade de voltas completadas", "Tempo total de prova"], ascending=[False, True]).reset_index(drop=True)
+
+# Como resetamos o index, a posição vai ser o index + 1
+df_results_race_kart["Posição de chegada"] = df_results_race_kart.index + 1
+
+print(f"\n************** DF FINAL **************\n{df_results_race_kart}\n")
