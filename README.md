@@ -40,3 +40,8 @@ pip install -r requirements.txt
 # Executar script principal
 python scripts/resultados_corrida_kart.py
 ```
+
+## Observações
+
+Quando executar o script pela primeira vez, será gerado um arquivo excel para cada etapa incluida no desafio, além
+de também ser mostrado no terminal cada tabela resultante.
