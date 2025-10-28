@@ -1,3 +1,8 @@
 *.pyc
 __pycache__/
 .vscode/
+data/diff_tempo_para_o_vencedor.xlsx
+data/melhor_volta_corrida.xlsx
+data/melhores_voltas_por_piloto.xlsx
+data/results_race_kart.xlsx
+data/velocidades_medias_por_piloto.xlsx

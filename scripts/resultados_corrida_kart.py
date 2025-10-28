@@ -4,7 +4,7 @@ import pandas as pd
 df_race_kart_logs = pd.read_csv("data/log_kart.csv", delimiter=";")
 print(f"\n************** KART LOG INICIAL **************\n{df_race_kart_logs}\n")
 
-# Instanciando df resultante com as respectivas colunas
+# === Instanciando df resultante com as respectivas colunas ===
 df_results_columns = [
     "Posição de chegada",
     "Código do piloto",
@@ -22,17 +22,17 @@ for piloto in df_race_kart_logs["Piloto"]:
     nome = partes[-1].strip()
     cod_pilotos[cod] = nome
 
-# Criar coluna auxiliar no DF original com apenas o código do piloto
+# === Criar coluna auxiliar no DF original com apenas o código do piloto ===
 df_race_kart_logs["Cod_Piloto"] = df_race_kart_logs["Piloto"].apply(
     lambda p: p.split("-")[0].strip()
 )
 
-# Coluna auxiliar com o nome do piloto
+# === Coluna auxiliar com o nome do piloto ===
 df_race_kart_logs["Nom_Piloto"] = df_race_kart_logs["Piloto"].apply(
     lambda p: p.split("-")[-1].strip()
 )
 
-# Inserir no df resultante o código e nome do piloto
+# === Inserir no df resultante o código e nome do piloto ===
 df_results_race_kart["Código do piloto"] = list(cod_pilotos.keys())
 df_results_race_kart["Nome do piloto"] = list(cod_pilotos.values())
 
@@ -46,7 +46,7 @@ qtd_voltas_dict = {
     for piloto_str, qtd in qtd_voltas_series.items()
 }
 
-# Inserir quantidade de voltas no DF de resultados
+# === Inserir quantidade de voltas no DF de resultados ===
 df_results_race_kart["Quantidade de voltas completadas"] = (
     df_results_race_kart["Código do piloto"].map(qtd_voltas_dict)
 )
@@ -58,12 +58,12 @@ df_race_kart_logs['Tempo_Volta_td'] = pd.to_timedelta(
     '00:' + df_race_kart_logs['Tempo_Volta']
 ) # Transformar em timedelta p calcular as durações, vem como object no df
 
-# Retorna uma serie com o valor somado por cada cod. de piloto
+# === Retorna uma serie com o valor somado por cada cod. de piloto ===
 tempo_por_piloto_series = df_race_kart_logs.groupby("Cod_Piloto")["Tempo_Volta_td"].sum()
 df_results_race_kart["Tempo total de prova"] = df_results_race_kart["Código do piloto"].map(tempo_por_piloto_series)
 # print(f"\n************** DF RESULTANTE APÓS TEMPO TOTAL DE PROVA **************\n{df_results_race_kart}\n")
 
-# Formatar a coluna para tornar mais legível
+# === Formatar a coluna para tornar mais legível ===
 df_results_race_kart["Tempo total de prova"] = df_results_race_kart["Tempo total de prova"].astype(str).apply(lambda x: x.split(" ")[2])
 
 # print(f"\n************** DF RESULTANTE APÓS FORMATAÇÃO DA DURAÇÃO **************\n{df_results_race_kart}\n")
@@ -71,7 +71,7 @@ df_results_race_kart["Tempo total de prova"] = df_results_race_kart["Tempo total
 # === 3. Posição de chegada dos pilotos ===
 df_results_race_kart = df_results_race_kart.sort_values(by=["Quantidade de voltas completadas", "Tempo total de prova"], ascending=[False, True]).reset_index(drop=True)
 
-# Como resetamos o index, a posição vai ser o index + 1
+# === Como resetamos o index, a posição vai ser o index + 1 ===
 df_results_race_kart["Posição de chegada"] = df_results_race_kart.index + 1
 
 print(f"\n************** DF FINAL **************\n{df_results_race_kart}\n")
@@ -83,7 +83,7 @@ print("""
                                 SEÇÃO DE BONUS
      **********************************************************************
       """)
-# Melhor volta de cada piloto
+# === Melhor volta de cada piloto ===
 idx_melhores_voltas = df_race_kart_logs.groupby("Cod_Piloto")["Tempo_Volta_td"].idxmin()
 
 df_melhores_voltas = df_race_kart_logs.loc[idx_melhores_voltas, ["Cod_Piloto", "Tempo_Volta_td", "N_Volta", "Nom_Piloto"]]
@@ -93,7 +93,7 @@ df_melhores_voltas = df_melhores_voltas.reset_index(drop=True)
 df_melhores_voltas.to_excel("data/melhores_voltas_por_piloto.xlsx")
 print(f"\n************** DF COM AS MELHORES VOLTAS DA CORRIDA POR PILOTO **************\n{df_melhores_voltas}\n")
 
-# Melhor volta da corrida
+# === Melhor volta da corrida ===
 idx_melhor_volta_corrida = df_race_kart_logs["Tempo_Volta_td"].idxmin()
 df_melhor_volta_corrida = df_race_kart_logs.loc[[idx_melhor_volta_corrida], ["Cod_Piloto", "Nom_Piloto", "Tempo_Volta", "N_Volta"]]
 df_melhor_volta_corrida = df_melhor_volta_corrida.reset_index(drop=True)
@@ -101,7 +101,7 @@ df_melhor_volta_corrida = df_melhor_volta_corrida.reset_index(drop=True)
 df_melhor_volta_corrida.to_excel("data/melhor_volta_corrida.xlsx")
 print(f"\n************** MELHOR VOLTA DA CORRIDA NO GERAL **************\n{df_melhor_volta_corrida}\n")
 
-# Velocidade média por piloto
+# === Velocidade média por piloto ===
 df_race_kart_logs["Velocidade_Media_da_Volta"] = (df_race_kart_logs["Velocidade_Media_da_Volta"].str.replace(",", ".", regex=False).astype(float))
 velocidades_medias = df_race_kart_logs.groupby("Cod_Piloto")["Velocidade_Media_da_Volta"].mean().round(2)
 df_velocidades_medias = velocidades_medias.reset_index()
@@ -112,7 +112,7 @@ df_velocidades_medias.rename(columns={"Velocidade_Media_da_Volta": "Velocidade m
 df_velocidades_medias.to_excel("data/velocidades_medias_por_piloto.xlsx")
 print(f"\n************** DF COM AS VELOCIDADES MÉDIAS DOS PILOTOS **************\n{df_velocidades_medias}\n")
 
-# Tempo de diferença para o vencedor
+# === Tempo de diferença para o vencedor === 
 df_results_race_kart["Tempo_total_td"] = pd.to_timedelta(df_results_race_kart["Tempo total de prova"])
 tempo_vencedor = df_results_race_kart.loc[0, "Tempo_total_td"]
 
@@ -120,4 +120,4 @@ df_results_race_kart["Diferença para o vencedor"] = df_results_race_kart["Tempo
 df_results_race_kart["Diferença para o vencedor"] = df_results_race_kart["Diferença para o vencedor"].astype(str).apply(lambda d: d.split(" ")[2])
 
 df_velocidades_medias.to_excel("data/diff_tempo_para_o_vencedor.xlsx")
-print(df_results_race_kart)
+print(f"\n************** DF COM AS DIFERENÇAS DE TEMPO EM RELAÇÃO AO VENCEDOR **************\n{df_velocidades_medias}\n")
